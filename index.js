@@ -67,7 +67,7 @@ function inputAction (){
     updateEmpMngr();
     } else if (res.jobTitleInput === "View All Roles"){
     viewAllRoles();
-    });
+    };
 }
 
 inputAction();
@@ -108,18 +108,19 @@ function addEmp () {
     })
 };
 
+
 function addMore () {
     inquirer.prompt([
     {
     type: "confirm",
-    message: "Would you like to add more employees?",
+    message: "add more employees?",
     name: "confirmEmployee",
     default: true
     }])
     .then((ans) => {
     // console.log(yes);
     if (ans.confirmEmployee === true){
-    inputAction();
+    inputEmployee();
     } else {
     output();
     return "done";
@@ -127,11 +128,4 @@ function addMore () {
 })
 }
 
-viewAllEmp();
-viewEmpDept();
-viewEmpMngr();
-remEmp();
-updateEmp();
-updateEmpRole();
-updateEmpMngr();
-viewAllRoles();
+// addMore()
