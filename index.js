@@ -126,11 +126,40 @@ function addDept() {
     });
 }
 
+function addRole() {
+  console.log("Adding a New Role");
+  inquirer
+    .prompt([{
+      type: "input",
+      name: "title",
+      message: "Which Role you'd like to add?",
+      },
+      {
+        type: "input",
+        name: "salary",
+        message: "What is the salary?",
+      },
+      {
+        type: "input",
+        name: "department_id",
+        message: "What is department ID?",
+      },
+    ])
+    .then((data) => {
+      console.log(data);
+      const sqlquery = `INSERT INTO role (title, salary, department_id) VALUES ('${data.title}', '${data.salary}', '${data.department_id}')`;
+      connection.query(sqlquery, function (err, res) {
+        if (err) throw err;
+        console.log ("Role Added Successfully!")
+        inputAction();
+      });
+    });
+}
+
 function addEmp() {
   console.log("Adding Employee");
   inquirer
     .prompt([
-
       {
         type: "input",
         name: "first_name",
@@ -146,22 +175,15 @@ function addEmp() {
         name: "dept_id",
         message: "What is employee's Dept ID?",
       },
-      {
-        type: "input",
-        name: "manager_id",
-        message: "What is employee's Manager ID?",
-      },
+      // {
+      //   type: "input",
+      //   name: "manager_id",
+      //   message: "What is employee's Manager ID?",
+      // },
     ])
     .then((data) => {
       console.log(data);
-      const sqlquery_role = `INSERT INTO role (title, salary, department_id) VALUES ('Senior Expert', 125000, 1)`;
-
-      // const sqlquery = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ('${data.first_name}', '${data.last_name}', '${data.role_id}', '${data.manager_id}')`;
-
-      const sqlquery = `INSERT INTO employee (first_name, last_name, role_id) SELECT '${data.first_name}', '${data.last_name}', r.id FROM role r where r.department_id = ${data.dept_id}`;
-
-      // const sqlquery = `INSERT INTO employee (first_name, last_name, role_id) SELECT 'aaa', 'bbbb', r.id FROM role r where r.department_id = 1`;
-
+      const sqlquery = `INSERT INTO employee (first_name, last_name, dept_id) SELECT '${data.first_name}', '${data.last_name}', r.id FROM role r where r.department_id = ${data.dept_id}`;
       connection.query(sqlquery, function (err, res) {
         if (err) throw err;
         console.log ("Employee Added Successfully!")
