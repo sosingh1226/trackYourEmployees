@@ -2,13 +2,14 @@ const inquirer = require("inquirer");
 const mysql = require("mysql");
 require("dotenv").config();
 
-const allEmployees = [];
-
 const connection = mysql.createConnection({
   host: "localhost",
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME
+  database: process.env.DB_NAME,
+  //   user: "root",
+  //   password: "your_current_password",
+  //   database: "employeesDB"
 });
 
 connection.connect(function (err) {
@@ -51,25 +52,24 @@ function inputAction() {
     ])
     .then((res) => {
       console.log(res);
-      if (res.actionToPerform === "Add Employee") {
+      if (res.actionToPerform === "Add Department") {
+        addDept();
+      } else if (res.actionToPerform === "Add Role") {
+        addRole();
+      } else if (res.actionToPerform === "Add Employee") {
         addEmp();
       } else if (res.actionToPerform === "View All Departments") {
         viewAllDept();
-    } else if (res.actionToPerform === "View All Roles") {
+      } else if (res.actionToPerform === "View All Roles") {
         viewAllRoles();
       } else if (res.actionToPerform === "View All Employees") {
         viewAllEmp();
-      } else if (res.actionToPerform === "View All Employees by Manager") {
-        viewEmpMngr();
-      } else if (res.actionToPerform === "Remove Employee") {
-        remEmp();
-      } else if (res.actionToPerform === "Update Employee") {
-        updateEmp();
-      } else if (res.actionToPerform === "Update Employee Role") {
-        updateEmpRole();
-      } else if (res.actionToPerform === "Update Employee Manager") {
-        updateEmpMngr();
-
+      // } else if (res.actionToPerform === "Update Department") {
+      //   updateDept();
+      // } else if (res.actionToPerform === "Update Role") {
+      //   updateRole();
+      // } else if (res.actionToPerform === "Update Employee") {
+      //   updateEmp();
       } else {
         console.log("GoodBye!");
         connection.end();
@@ -88,53 +88,84 @@ function viewAllDept() {
 }
 
 function viewAllRoles() {
-    console.log("Viewing all Roles");
-    const sqlquery = "SELECT * FROM role";
-    connection.query(sqlquery, function (err, res) {
-      if (err) throw err;
-      console.table(res);
-      inputAction();
+  console.log("Viewing all Roles");
+  const sqlquery = "SELECT * FROM role";
+  connection.query(sqlquery, function (err, res) {
+    if (err) throw err;
+    console.table(res);
+    inputAction();
+  });
+}
+
+function viewAllEmp() {
+  console.log("Viewing all employees");
+  const sqlquery = "SELECT * FROM EMPLOYEE";
+  connection.query(sqlquery, function (err, res) {
+    if (err) throw err;
+    console.table(res);
+    inputAction();
+  });
+}
+
+function addDept() {
+  console.log("Adding a new Department");
+  inquirer
+    .prompt({
+      type: "input",
+      name: "Department_Name",
+      message: "Which Department you'd like to add?",
+    })
+    .then((data) => {
+      console.log(data);
+      const sqlquery = `INSERT INTO department (name) VALUES ('${data.Department_Name}')`;
+      connection.query(sqlquery, function (err, res) {
+        if (err) throw err;
+        console.log ("Department Added Successfully!")
+        inputAction();
+      });
     });
-  }
+}
 
-  function viewAllEmp() {
-    console.log("Viewing all employees");
-    const sqlquery = "SELECT * FROM EMPLOYEE";
-    connection.query(sqlquery, function (err, res) {
-      if (err) throw err;
-      console.table(res);
-      inputAction();
+function addEmp() {
+  console.log("Adding Employee");
+  inquirer
+    .prompt([
+
+      {
+        type: "input",
+        name: "first_name",
+        message: "What is employee's First Name?",
+      },
+      {
+        type: "input",
+        name: "last_name",
+        message: "What is employee's Last Name?",
+      },
+      {
+        type: "input",
+        name: "dept_id",
+        message: "What is employee's Dept ID?",
+      },
+      {
+        type: "input",
+        name: "manager_id",
+        message: "What is employee's Manager ID?",
+      },
+    ])
+    .then((data) => {
+      console.log(data);
+      const sqlquery_role = `INSERT INTO role (title, salary, department_id) VALUES ('Senior Expert', 125000, 1)`;
+
+      // const sqlquery = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ('${data.first_name}', '${data.last_name}', '${data.role_id}', '${data.manager_id}')`;
+
+      const sqlquery = `INSERT INTO employee (first_name, last_name, role_id) SELECT '${data.first_name}', '${data.last_name}', r.id FROM role r where r.department_id = ${data.dept_id}`;
+
+      // const sqlquery = `INSERT INTO employee (first_name, last_name, role_id) SELECT 'aaa', 'bbbb', r.id FROM role r where r.department_id = 1`;
+
+      connection.query(sqlquery, function (err, res) {
+        if (err) throw err;
+        console.log ("Employee Added Successfully!")
+        inputAction();
+      });
     });
-  }
-
-// function addEmp() {
-//   console.log("Adding Employee");
-//   inquirer
-//     .prompt([
-//       {
-//         type: "input",
-//         name: "first_name",
-//         message: "What is employee's First Name?",
-//       },
-//       {
-//         type: "input",
-//         name: "last_name",
-//         message: "What is employee's Last Name?",
-//       },
-//       {
-//         type: "input",
-//         name: "role_id",
-//         message: "What is employee's Role ID?",
-//       },
-//       {
-//         type: "input",
-//         name: "manager_id",
-//         message: "What is employee's Manager ID?",
-//       },
-//     ])
-//     .then((data) => {
-//       console.log(data);
-
-//       inputAction();
-//     });
-// }
+}
