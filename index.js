@@ -68,8 +68,8 @@ function inputAction() {
       //   updateDept();
       // } else if (res.actionToPerform === "Update Role") {
       //   updateRole();
-      // } else if (res.actionToPerform === "Update Employee") {
-      //   updateEmp();
+      } else if (res.actionToPerform === "Update Employee Role") {
+        updateERole();
       } else {
         console.log("GoodBye!");
         connection.end();
@@ -183,10 +183,29 @@ function addEmp() {
     ])
     .then((data) => {
       console.log(data);
-      const sqlquery = `INSERT INTO employee (first_name, last_name, dept_id) SELECT '${data.first_name}', '${data.last_name}', r.id FROM role r where r.department_id = ${data.dept_id}`;
+      const sqlquery = `INSERT INTO employee (first_name, last_name, role_id) SELECT '${data.first_name}', '${data.last_name}', r.id FROM role r where r.department_id = ${data.dept_id}`;
       connection.query(sqlquery, function (err, res) {
         if (err) throw err;
         console.log ("Employee Added Successfully!")
+        inputAction();
+      });
+    });
+}
+
+function addDept() {
+  console.log("Adding a new Department");
+  inquirer
+    .prompt({
+      type: "input",
+      name: "Department_Name",
+      message: "Which Department you'd like to add?",
+    })
+    .then((data) => {
+      console.log(data);
+      const sqlquery = `INSERT INTO department (name) VALUES ('${data.Department_Name}')`;
+      connection.query(sqlquery, function (err, res) {
+        if (err) throw err;
+        console.log ("Department Added Successfully!")
         inputAction();
       });
     });
