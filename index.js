@@ -192,20 +192,26 @@ function addEmp() {
     });
 }
 
-function addDept() {
-  console.log("Adding a new Department");
+function updateERole() {
+  console.log("Updating Employee Role");
   inquirer
-    .prompt({
+    .prompt([
+      {
+        type: "input",
+        name: "id",
+        message: "What is employee's Id?",
+      },
+      {
       type: "input",
-      name: "Department_Name",
-      message: "Which Department you'd like to add?",
-    })
+      name: "role_id",
+      message: "Enter new role of employee",
+    }])
     .then((data) => {
       console.log(data);
-      const sqlquery = `INSERT INTO department (name) VALUES ('${data.Department_Name}')`;
+      const sqlquery = `UPDATE employee SET role_id = ${data.role_id} where id = ${data.id}`;
       connection.query(sqlquery, function (err, res) {
         if (err) throw err;
-        console.log ("Department Added Successfully!")
+        console.log ("Role Updated Successfully!")
         inputAction();
       });
     });
