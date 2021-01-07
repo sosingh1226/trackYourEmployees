@@ -99,7 +99,7 @@ function viewAllRoles() {
 
 function viewAllEmp() {
   console.log("Viewing all employees");
-  const sqlquery = "SELECT * FROM EMPLOYEE";
+  const sqlquery = "SELECT * FROM employee";
   connection.query(sqlquery, function (err, res) {
     if (err) throw err;
     console.table(res);
@@ -172,18 +172,19 @@ function addEmp() {
       },
       {
         type: "input",
-        name: "dept_id",
-        message: "What is employee's Dept ID?",
+        name: "dept_name",
+        message: "What is employee's Dept Name?",
       },
-      // {
-      //   type: "input",
-      //   name: "manager_id",
-      //   message: "What is employee's Manager ID?",
-      // },
+      {
+        type: "input",
+        name: "title",
+        message: "What is employee's Title?",
+      },
     ])
     .then((data) => {
       console.log(data);
-      const sqlquery = `INSERT INTO employee (first_name, last_name, role_id) SELECT '${data.first_name}', '${data.last_name}', r.id FROM role r where r.department_id = ${data.dept_id}`;
+      // const sqlquery = `INSERT INTO employee (first_name, last_name, role_id) SELECT '${data.first_name}', '${data.last_name}', r.id FROM role r where r.department_id = ${data.dept_id}`;
+      const sqlquery =`INSERT INTO employee (first_name, last_name, role_id) SELECT '${data.first_name}', '${data.last_name}', role.id FROM role INNER JOIN department ON role.department_id = department.id AND department.name = '${data.dept_name}' AND role.title = '${data.title}'`;
       connection.query(sqlquery, function (err, res) {
         if (err) throw err;
         console.log ("Employee Added Successfully!")
@@ -208,7 +209,7 @@ function updateERole() {
     }])
     .then((data) => {
       console.log(data);
-      const sqlquery = `UPDATE employee SET role_id = ${data.role_id} where id = ${data.id}`;
+      const sqlquery = `UPDATE employee SET role_id = '${data.role_id}' where id = '${data.id}'`;
       connection.query(sqlquery, function (err, res) {
         if (err) throw err;
         console.log ("Role Updated Successfully!")
